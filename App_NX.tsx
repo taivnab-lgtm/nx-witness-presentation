@@ -46,7 +46,7 @@ const App_NX: React.FC = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      // Scale to fit width only — height grows naturally and the page scrolls
+      // Scale to fit width only for initial calculation
       setScale(window.innerWidth / 1920);
     };
 
@@ -119,9 +119,6 @@ const App_NX: React.FC = () => {
   };
 
   useEffect(() => {
-    let wheelTimeout: ReturnType<typeof setTimeout> | null = null;
-    let wheelAccumulator = 0;
-
     const handleKeyDown = (e: KeyboardEvent) => {
       // Don't trigger navigation if editing inputs
       if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) return;
@@ -133,48 +130,10 @@ const App_NX: React.FC = () => {
       }
     };
 
-    const handleWheel = (e: WheelEvent) => {
-      // If the event target (or any scrollable ancestor) can still scroll in
-      // the wheel direction, let the browser handle it natively.
-      let node = e.target as HTMLElement | null;
-      while (node && node !== document.documentElement) {
-        const style = window.getComputedStyle(node);
-        const oy = style.overflowY;
-        const scrollable = (oy === 'auto' || oy === 'scroll') && node.scrollHeight > node.clientHeight + 2;
-        if (scrollable) {
-          const atTop    = node.scrollTop <= 1;
-          const atBottom = node.scrollTop >= node.scrollHeight - node.clientHeight - 2;
-          const goingUp  = e.deltaY < 0;
-          const goingDown = e.deltaY > 0;
-          // Not at boundary — let the element scroll naturally
-          if (!((atTop && goingUp) || (atBottom && goingDown))) return;
-          break;
-        }
-        node = node.parentElement;
-      }
-
-      // Also let the outer page scroll naturally if a scrollbar is visible
-      const pageOverflows = document.documentElement.scrollHeight > document.documentElement.clientHeight + 4;
-      if (pageOverflows) return;
-
-      // No scrollable content — navigate slides
-      wheelAccumulator += e.deltaY;
-      if (wheelTimeout) return;
-      wheelTimeout = setTimeout(() => {
-        if (wheelAccumulator > 30)       nextSlide();
-        else if (wheelAccumulator < -30) prevSlide();
-        wheelAccumulator = 0;
-        wheelTimeout = null;
-      }, 180);
-    };
-
     window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('wheel', handleWheel, { passive: true });
     
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('wheel', handleWheel);
-      if (wheelTimeout) clearTimeout(wheelTimeout);
     };
   }, [nextSlide, prevSlide]);
 
@@ -210,43 +169,41 @@ const App_NX: React.FC = () => {
   };
 
   return (
-    <>
-      {/* Full-page scrollable container — slides can grow beyond 1080px */}
-      <div className="bg-slate-950 font-sans text-slate-200" style={{ minHeight: '100vh', overflowX: 'hidden' }}>
-
-        {/* 1920px virtual canvas — zoom scales it to screen width, height is auto */}
+    <div 
+      id="main-scroll-container"
+      className="bg-slate-950 font-sans text-slate-200 h-screen overflow-y-auto overflow-x-hidden no-scrollbar flex flex-col items-center"
+    >
+      {/* 1920x1080 virtual canvas - centering and fixed proportions */}
+      <div 
+        className="relative bg-slate-900 shadow-[0_0_100px_rgba(0,0,0,0.5)] flex-shrink-0"
+        style={{
+          width: '1920px',
+          height: '1080px',
+          zoom: scale,
+        }}
+      >
         <div
-          className="relative bg-slate-900 shadow-[0_0_100px_rgba(0,0,0,0.5)]"
-          style={{
-            width: '1920px',
-            minHeight: '1080px',
-            zoom: scale,
-          }}
+          className="w-full h-full relative"
+          style={{ perspective: '2500px', transformStyle: 'preserve-3d' }}
         >
-          <div
-            className="w-full min-h-[1080px] relative"
-            style={{ perspective: '2500px', transformStyle: 'preserve-3d' }}
-          >
-            <AnimatePresence mode="popLayout" custom={direction} initial={false}>
-              <motion.div
-                key={currentSlide}
-                custom={direction}
-                variants={pageFlipVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                className="w-full min-h-[1080px]"
-                style={{ backfaceVisibility: 'hidden' }}
-              >
-                <CurrentSlideComponent isActive={true} />
-              </motion.div>
-            </AnimatePresence>
-          </div>
+          <AnimatePresence mode="popLayout" custom={direction} initial={false}>
+            <motion.div
+              key={currentSlide}
+              custom={direction}
+              variants={pageFlipVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              className="w-full h-full"
+              style={{ backfaceVisibility: 'hidden' }}
+            >
+              <CurrentSlideComponent isActive={true} />
+            </motion.div>
+          </AnimatePresence>
         </div>
-
       </div>
 
-      {/* Fixed navigation — stays bottom-right regardless of scroll */}
+      {/* Fixed navigation stays in bottom right corner of browser viewport */}
       <div className="fixed bottom-6 right-6 z-50 flex items-center space-x-4 bg-slate-800/80 backdrop-blur-sm p-2 rounded-full shadow-lg border border-slate-700 transition-opacity opacity-50 hover:opacity-100">
         <span className="text-xs font-semibold text-slate-400 pl-2">
           {currentSlide + 1} / {totalSlides}
@@ -283,7 +240,7 @@ const App_NX: React.FC = () => {
           style={{ width: `${((currentSlide + 1) / totalSlides) * 100}%` }}
         />
       </div>
-    </>
+    </div>
   );
 };
 

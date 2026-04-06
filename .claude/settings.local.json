@@ -4,7 +4,29 @@
       "mcp__Claude_Preview__preview_start",
       "Bash(curl -s http://localhost:5173)",
       "Bash(npx tsc:*)",
-      "Bash(npx vite:*)"
+      "Bash(npx vite:*)",
+      "mcp__45c2e66d-6e26-4b67-ba9b-b2fa48ee542f__list_teams",
+      "Read(//c/Users/User/.local/share/**)",
+      "Read(//c/Users/User/.config/**)",
+      "Read(//c/Users/User/.vercel/**)",
+      "Read(//c/Users/User/AppData/Local/**)",
+      "Read(//c/Users/User/AppData/Roaming/**)",
+      "Read(//c/Users/User/**)",
+      "Read(//c/Users/User/AppData/**)",
+      "Bash(npx vercel:*)",
+      "Bash(curl -s --max-time 10 -o \"D:/HDD Tender/presentation - Copy/public/assets/logos/genetec.png\" \"https://logo.clearbit.com/genetec.com\")",
+      "Bash(echo \"exit: $?\")",
+      "Bash(curl -s --max-time 10 \"https://httpbin.org/get\")",
+      "Bash(curl -s --max-time 15 -L -o \"D:/HDD Tender/presentation - Copy/public/assets/logos/genetec.png\" \"https://logo.clearbit.com/genetec.com\")",
+      "Bash(nslookup logo.clearbit.com)",
+      "Bash(curl -v --max-time 15 \"https://logo.clearbit.com/genetec.com\" -o /dev/null)",
+      "Bash(curl -L --max-time 10 \"https://cdn.simpleicons.org/mapbox/white\" -o mapbox.svg)",
+      "Bash(curl -L --max-time 10 \"https://cdn.simpleicons.org/siemens/white\" -o \"D:/HDD Tender/presentation - Copy/public/assets/logos/siemens.svg\")",
+      "Bash(curl -L --max-time 10 \"https://cdn.simpleicons.org/googlemaps/white\" -o googlemaps.svg)",
+      "Bash(curl -L --max-time 10 \"https://cdn.simpleicons.org/esri/white\" -o esri.svg)",
+      "Bash(curl -L --max-time 10 \"https://cdn.simpleicons.org/hikvision/white\" -o hikvision.svg)",
+      "Bash(ls -la *.svg)",
+      "Bash(dir /b *.svg)"
     ]
   }
 }
