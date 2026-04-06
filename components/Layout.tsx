@@ -26,8 +26,8 @@ const Layout: React.FC<LayoutProps> = ({ children, title, subtitle, className = 
         </div>
       )}
       
-      {/* Main Content */}
-      <div className="flex-1 relative">
+      {/* Main Content — scrollable when slide content overflows 1080px */}
+      <div className="flex-1 min-h-0 relative overflow-y-auto">
         {children}
       </div>
 
@@ -35,7 +35,7 @@ const Layout: React.FC<LayoutProps> = ({ children, title, subtitle, className = 
       <div className="absolute top-8 right-12">
         <div className="flex items-center space-x-3 opacity-60 hover:opacity-100 transition-opacity duration-300">
             <img 
-              src="/assets/slide/NX Logo/Nx-Witness_Full-Logo_RGB.svg" 
+              src="/assets/nx-witness-logo.svg" 
               className="h-6 md:h-8 w-auto block" 
               alt="Nx Witness Logo" 
             />

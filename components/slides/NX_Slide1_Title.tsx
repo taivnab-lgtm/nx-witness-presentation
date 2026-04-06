@@ -13,7 +13,7 @@ const NX_Slide1_Title: React.FC<{ isActive: boolean }> = () => {
       <div className="relative z-10 flex flex-col items-center">
         <div className="mb-12">
           <img 
-            src="/assets/slide/NX Logo/Nx-Witness_Full-Logo_RGB.svg" 
+            src="/assets/nx-witness-logo.svg" 
             className="h-16 md:h-20 w-auto transition-transform hover:scale-105 duration-500" 
             alt="Nx Witness Brand Logo" 
           />

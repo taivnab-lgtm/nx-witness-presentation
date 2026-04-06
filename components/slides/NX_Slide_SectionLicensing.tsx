@@ -12,7 +12,7 @@ const NX_Slide_SectionLicensing: React.FC<{ isActive: boolean }> = ({ isActive }
                 <div className="w-32 h-1 bg-blue-500 mx-auto rounded-full"></div>
             </div>
             <div className="absolute bottom-8 right-12 opacity-30">
-                <img src="/assets/slide/NX Logo/Nx-Witness_Full-Logo_RGB.svg" className="h-8 w-auto" alt="Nx Witness" />
+                <img src="/assets/nx-witness-logo.svg" className="h-8 w-auto" alt="Nx Witness" />
             </div>
         </div>
     );

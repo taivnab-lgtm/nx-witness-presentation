@@ -25,7 +25,7 @@ const NX_Slide_SectionIntegrations: React.FC<{ isActive: boolean }> = ({ isActiv
             {/* Nx logo bottom right */}
             <div className="absolute bottom-8 right-12 opacity-30">
                 <img
-                    src="/assets/slide/NX Logo/Nx-Witness_Full-Logo_RGB.svg"
+                    src="/assets/nx-witness-logo.svg"
                     className="h-8 w-auto"
                     alt="Nx Witness"
                 />
