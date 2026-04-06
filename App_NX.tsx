@@ -46,9 +46,8 @@ const App_NX: React.FC = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      const scaleX = window.innerWidth / 1920;
-      const scaleY = window.innerHeight / 1080;
-      setScale(Math.min(scaleX, scaleY));
+      // Scale to fit width only — height grows naturally and the page scrolls
+      setScale(window.innerWidth / 1920);
     };
 
     handleResize();
@@ -210,100 +209,81 @@ const App_NX: React.FC = () => {
     }),
   };
 
-  const visualW = 1920 * scale;
-  const visualH = 1080 * scale;
-
   return (
-    <div
-      className="w-screen bg-slate-950 overflow-x-hidden overflow-y-auto font-sans text-slate-200"
-      style={{ minHeight: '100vh' }}
-    >
-      {/* Centering wrapper — visual dimensions match scaled canvas */}
-      <div
-        className="flex justify-center"
-        style={{
-          paddingTop: `max(0px, calc((100vh - ${visualH}px) / 2))`,
-          paddingBottom: `max(0px, calc((100vh - ${visualH}px) / 2))`,
-        }}
-      >
-        {/* Visual-size container to fix layout/transform mismatch */}
-        <div style={{ width: `${visualW}px`, height: `${visualH}px`, position: 'relative', flexShrink: 0 }}>
+    <>
+      {/* Full-page scrollable container — slides can grow beyond 1080px */}
+      <div className="bg-slate-950 font-sans text-slate-200" style={{ minHeight: '100vh', overflowX: 'hidden' }}>
 
-      {/* 1920x1080 Virtual Canvas scaled to fit Screen */}
-      <div
-        className="relative bg-slate-900 shadow-[0_0_100px_rgba(0,0,0,0.5)] overflow-hidden"
-        style={{
-          width: '1920px',
-          height: '1080px',
-          transform: `scale(${scale})`,
-          transformOrigin: 'top left',
-          transition: 'transform 0.1s ease-out',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-        }}
-      >
-        <div 
-          className="w-full h-full relative"
-          style={{ perspective: '2500px', transformStyle: 'preserve-3d' }}
+        {/* 1920px virtual canvas — zoom scales it to screen width, height is auto */}
+        <div
+          className="relative bg-slate-900 shadow-[0_0_100px_rgba(0,0,0,0.5)]"
+          style={{
+            width: '1920px',
+            minHeight: '1080px',
+            zoom: scale,
+          }}
         >
-          <AnimatePresence mode="popLayout" custom={direction} initial={false}>
-            <motion.div
-              key={currentSlide}
-              custom={direction}
-              variants={pageFlipVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              className="w-full h-full absolute inset-0"
-              style={{ backfaceVisibility: 'hidden' }}
-            >
-              <CurrentSlideComponent isActive={true} />
-            </motion.div>
-          </AnimatePresence>
+          <div
+            className="w-full min-h-[1080px] relative"
+            style={{ perspective: '2500px', transformStyle: 'preserve-3d' }}
+          >
+            <AnimatePresence mode="popLayout" custom={direction} initial={false}>
+              <motion.div
+                key={currentSlide}
+                custom={direction}
+                variants={pageFlipVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                className="w-full min-h-[1080px]"
+                style={{ backfaceVisibility: 'hidden' }}
+              >
+                <CurrentSlideComponent isActive={true} />
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
 
-        {/* Floating Navigation Controls */}
-        <div className="absolute bottom-6 right-6 flex items-center space-x-4 bg-slate-800/80 backdrop-blur-sm p-2 rounded-full shadow-lg border border-slate-700 z-40 transition-opacity opacity-50 hover:opacity-100">
-          <span className="text-xs font-semibold text-slate-400 pl-2">
-            {currentSlide + 1} / {totalSlides}
-          </span>
-          <div className="h-4 w-px bg-slate-600 mx-2"></div>
-          <button
-            onClick={prevSlide}
-            className="p-2 hover:bg-slate-700 rounded-full text-slate-300 transition-colors focus:outline-none"
-            aria-label="Previous Slide"
-          >
-            <ChevronLeft size={20} />
-          </button>
-          <button
-            onClick={nextSlide}
-            className="p-2 hover:bg-blue-600 rounded-full text-white transition-colors focus:outline-none"
-            aria-label="Next Slide"
-          >
-            <ChevronRight size={20} />
-          </button>
-          <div className="h-4 w-px bg-slate-600 mx-2"></div>
-          <button
-             onClick={toggleFullscreen}
-             className="p-2 hover:bg-slate-700 rounded-full text-slate-300 transition-colors focus:outline-none"
-             aria-label="Fullscreen"
-          >
-            {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
-          </button>
-        </div>
-        
-        {/* Progress Bar */}
-        <div className="absolute bottom-0 left-0 w-full h-1 bg-slate-800">
-          <div 
-            className="h-full bg-blue-500 transition-all duration-500 ease-out shadow-[0_0_10px_#3b82f6]"
-            style={{ width: `${((currentSlide + 1) / totalSlides) * 100}%` }}
-          />
-        </div>
-        </div>
-        </div>{/* end visual-size container */}
-      </div>{/* end centering wrapper */}
-    </div>
+      </div>
+
+      {/* Fixed navigation — stays bottom-right regardless of scroll */}
+      <div className="fixed bottom-6 right-6 z-50 flex items-center space-x-4 bg-slate-800/80 backdrop-blur-sm p-2 rounded-full shadow-lg border border-slate-700 transition-opacity opacity-50 hover:opacity-100">
+        <span className="text-xs font-semibold text-slate-400 pl-2">
+          {currentSlide + 1} / {totalSlides}
+        </span>
+        <div className="h-4 w-px bg-slate-600 mx-2"></div>
+        <button
+          onClick={prevSlide}
+          className="p-2 hover:bg-slate-700 rounded-full text-slate-300 transition-colors focus:outline-none"
+          aria-label="Previous Slide"
+        >
+          <ChevronLeft size={20} />
+        </button>
+        <button
+          onClick={nextSlide}
+          className="p-2 hover:bg-blue-600 rounded-full text-white transition-colors focus:outline-none"
+          aria-label="Next Slide"
+        >
+          <ChevronRight size={20} />
+        </button>
+        <div className="h-4 w-px bg-slate-600 mx-2"></div>
+        <button
+          onClick={toggleFullscreen}
+          className="p-2 hover:bg-slate-700 rounded-full text-slate-300 transition-colors focus:outline-none"
+          aria-label="Fullscreen"
+        >
+          {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+        </button>
+      </div>
+
+      {/* Fixed progress bar at bottom */}
+      <div className="fixed bottom-0 left-0 w-full h-1 bg-slate-800 z-50">
+        <div
+          className="h-full bg-blue-500 transition-all duration-500 ease-out shadow-[0_0_10px_#3b82f6]"
+          style={{ width: `${((currentSlide + 1) / totalSlides) * 100}%` }}
+        />
+      </div>
+    </>
   );
 };
 

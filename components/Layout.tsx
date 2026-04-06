@@ -9,7 +9,7 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children, title, subtitle, className = "" }) => {
   return (
-    <div className={`w-full h-full p-12 md:p-16 flex flex-col ${className}`}>
+    <div className={`w-full min-h-[1080px] p-12 md:p-16 flex flex-col ${className}`}>
       {/* Header */}
       {(title || subtitle) && (
         <div className="mb-8 border-b border-slate-800 pb-4">
@@ -26,8 +26,8 @@ const Layout: React.FC<LayoutProps> = ({ children, title, subtitle, className = 
         </div>
       )}
       
-      {/* Main Content — scrollable when slide content overflows 1080px */}
-      <div className="flex-1 min-h-0 relative overflow-y-auto">
+      {/* Main Content — grows naturally, page scrolls if overflow */}
+      <div className="flex-1 relative">
         {children}
       </div>
 
