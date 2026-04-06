@@ -6,14 +6,34 @@
     <title>SafeTouch Pitch Deck</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-      /* Custom scrollbar hiding for cleaner presentation */
-      .no-scrollbar::-webkit-scrollbar {
-        display: none;
+      /* Custom scrollbar — dark theme */
+      html, body {
+        overflow: hidden; /* presentation fits screen; outer div handles overflow-y-auto */
       }
-      .no-scrollbar {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
+      /* Scrollable containers inside slides */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
       }
+      ::-webkit-scrollbar-track {
+        background: rgba(15, 23, 42, 0.6);
+        border-radius: 9999px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(100, 116, 139, 0.7);
+        border-radius: 9999px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(148, 163, 184, 0.9);
+      }
+      /* Firefox */
+      * {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(100,116,139,0.7) rgba(15,23,42,0.4);
+      }
+      /* Helper class to hide scrollbar on specific elements */
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
   <script type="importmap">
 {
@@ -28,7 +48,7 @@
 </script>
 <link rel="stylesheet" href="/index.css">
 </head>
-  <body class="bg-gray-100 text-slate-800 antialiased overflow-hidden">
+  <body class="bg-gray-100 text-slate-800 antialiased">
     <div id="root"></div>
   <script type="module" src="/index.tsx"></script>
 </body>

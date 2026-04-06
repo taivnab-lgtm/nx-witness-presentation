@@ -135,20 +135,38 @@ const App_NX: React.FC = () => {
     };
 
     const handleWheel = (e: WheelEvent) => {
-      // Basic debounce for trackpad/mouse
-      wheelAccumulator += e.deltaY;
-      
-      if (wheelTimeout) return;
-      
-      wheelTimeout = setTimeout(() => {
-        if (wheelAccumulator > 30) {
-          nextSlide();
-        } else if (wheelAccumulator < -30) {
-          prevSlide();
+      // If the event target (or any scrollable ancestor) can still scroll in
+      // the wheel direction, let the browser handle it natively.
+      let node = e.target as HTMLElement | null;
+      while (node && node !== document.documentElement) {
+        const style = window.getComputedStyle(node);
+        const oy = style.overflowY;
+        const scrollable = (oy === 'auto' || oy === 'scroll') && node.scrollHeight > node.clientHeight + 2;
+        if (scrollable) {
+          const atTop    = node.scrollTop <= 1;
+          const atBottom = node.scrollTop >= node.scrollHeight - node.clientHeight - 2;
+          const goingUp  = e.deltaY < 0;
+          const goingDown = e.deltaY > 0;
+          // Not at boundary — let the element scroll naturally
+          if (!((atTop && goingUp) || (atBottom && goingDown))) return;
+          break;
         }
+        node = node.parentElement;
+      }
+
+      // Also let the outer page scroll naturally if a scrollbar is visible
+      const pageOverflows = document.documentElement.scrollHeight > document.documentElement.clientHeight + 4;
+      if (pageOverflows) return;
+
+      // No scrollable content — navigate slides
+      wheelAccumulator += e.deltaY;
+      if (wheelTimeout) return;
+      wheelTimeout = setTimeout(() => {
+        if (wheelAccumulator > 30)       nextSlide();
+        else if (wheelAccumulator < -30) prevSlide();
         wheelAccumulator = 0;
         wheelTimeout = null;
-      }, 200); // 200ms debounce
+      }, 180);
     };
 
     window.addEventListener('keydown', handleKeyDown);
